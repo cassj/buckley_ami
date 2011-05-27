@@ -161,8 +161,8 @@ BEDTools_link = "https://github.com/arq5x/bedtools/tarball/master"
 
 desc "install bedtools"
 task :install_bedtools, :roles => group_name do
-#  run "cd #{working_dir} && curl -L #{BEDTools_link} > bedtools.tar.gz"
-#  run "cd #{working_dir} && tar -zxvf bedtools.tar.gz" 
+  run "cd #{working_dir} && curl -L #{BEDTools_link} > bedtools.tar.gz"
+  run "cd #{working_dir} && tar -zxvf bedtools.tar.gz" 
 
   bed_dir =  capture "ls -d #{working_dir}/*bedtools*"
   bed_dir = bed_dir.split("\n").reject{|f| f.match(/.*gz$/) }[0]
