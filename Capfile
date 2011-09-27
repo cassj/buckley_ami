@@ -59,6 +59,25 @@ end
 before 'install_bowtie', 'EC2:start'
 
 
+task :fetch_genome, :roles => group_name do
+  sudo "mkdir -p /opt/bowtie/indexes"
+  sudo "curl https://s3-eu-west-1.amazonaws.com/genome-mm9-bowtie/mm9.ebwt.zip > /tmp/mm9.ebwt.zip"
+  sudo "mv /tmp/mm9.ebwt.zip /opt/bowtie/indexes/"
+  run "sudo rm -Rf /opt/bowtie/indexes/chr*"
+  run "cd  /opt/bowtie/indexes && sudo unzip -o mm9.ebwt.zip"
+  run "echo 'export BOWTIE_INDEXES=/opt/bowtie/indexes' > /tmp/bowtie.sh"
+  sudo "mv /tmp/bowtie.sh /etc/profile.d/bowtie.sh"
+  run "echo 'setenv BOWTIE_INDEXES /opt/bowtie/indexes' > /tmp/bowtie.csh"
+  sudo "mv /tmp/bowtie.csh /etc/profile.d/bowtie.csh"
+end
+before "fetch_genome","EC2:start"
+
+
+
+
+
+
+
 # R   
 desc "install R on all running instances in group group_name"
 task :install_r, :roles  => group_name do
@@ -174,6 +193,10 @@ before 'install_bedtools', 'EC2:start'
 
 
 
-
-
-
+# ChIPseq Pipeline
+desc "Get the ChIPseq pipeline scripts"
+task :install_chipseq_pipeline, :roles => group_name do
+   run "curl -L https://github.com/cassj/chipseq_pipeline/tarball/master > /tmp/csp.tgz"
+   run "cd /tmp ** tar -xvzf csp.tgz"
+end
+before "install_chipseq_pipeline", "EC2:start"
